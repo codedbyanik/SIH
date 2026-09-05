@@ -5474,6 +5474,37 @@ input {
   color: #9db3c7;
 }
 
+body {
+  padding-bottom: 32px;
+}
+
+.prototype-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+
+  box-sizing: border-box;
+  padding: 7px 16px;
+
+  background: #fff3cd;
+  color: #664d03;
+  border-top: 1px solid #ffe69c;
+
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .prototype-banner {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
 /* =========================================================================
    ACCESSIBILITY — HIGH CONTRAST MODE
    Applies only to Citizen chrome + content areas, never to official-

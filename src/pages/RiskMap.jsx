@@ -306,9 +306,9 @@ function RiskMap() {
               {/* REGIONAL RISK MAP */}
               <div className="demo-map">
                 <MapContainer
-                  center={[28.2, 85.5]}
-                  zoom={6}
-                  scrollWheelZoom={false}
+                  center={[22.5, 77.0]}
+                  zoom={4.5}
+                  scrollWheelZoom={true}
                   style={{ height: "100%", width: "100%" }}
                 >
                   <TileLayer

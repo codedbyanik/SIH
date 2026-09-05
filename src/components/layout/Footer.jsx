@@ -145,6 +145,12 @@ export default function Footer() {
 
         </div>
       </div>
+      <div className="prototype-banner">
+  ⚠️{" "}
+  {isHindi
+    ? "प्रोटोटाइप — स्मार्ट इंडिया हैकाथॉन 2026 | समस्या विवरण: SIH26192"
+    : "Prototype — Smart India Hackathon 2026 | Problem Statement: SIH26192"}
+</div>
     </footer>
   );
 }
