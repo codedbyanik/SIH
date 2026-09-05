@@ -5004,7 +5004,7 @@ input {
 
 /* ---------- Header / gov bar ---------- */
 .site-header {
-  position: sticky;
+  position: static;
   top: 0;
   z-index: 30;
   background: #ffffff;
@@ -5297,7 +5297,7 @@ input {
 .navbar {
   background: #ffffff;
   border-bottom: 1px solid var(--border);
-  position: sticky;
+  position: static;
   top: 0;
   z-index: 25;
   box-shadow: 0 2px 6px rgba(11, 53, 88, 0.06);
