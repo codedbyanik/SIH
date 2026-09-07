@@ -34,6 +34,8 @@ function Home() {
   });
 
   const [riskChecked, setRiskChecked] = useState(false);
+  const [gettingLocation, setGettingLocation] = useState(false);
+const [locationError, setLocationError] = useState("");
 
   // =====================================================
   // TRANSLATIONS
@@ -285,6 +287,322 @@ function Home() {
       : "Get Help",
   };
 
+
+  // =====================================================
+// GET USER'S CURRENT LOCATION
+// =====================================================
+
+const handleGetMyLocation = () => {
+  if (!navigator.geolocation) {
+    setLocationError(
+      isHindi
+        ? "आपके ब्राउज़र में स्थान सेवा उपलब्ध नहीं है।"
+        : "Geolocation is not supported by your browser."
+    );
+    return;
+  }
+
+  setGettingLocation(true);
+  setLocationError("");
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      try {
+        const { latitude, longitude } = position.coords;
+
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Location lookup failed");
+        }
+
+        const data = await response.json();
+
+        const address = data.address || {};
+
+        const stateName =
+          address.state ||
+          address.state_district ||
+          "";
+
+        const districtName =
+          address.state_district ||
+          address.district ||
+          address.county ||
+          "";
+
+        const villageName =
+          address.village ||
+          address.town ||
+          address.city ||
+          address.municipality ||
+          "";
+
+        // -------------------------------------------------
+        // Match the detected location with available demo
+        // locations in the dropdowns.
+        // -------------------------------------------------
+
+        const supportedStates = [
+          "Uttarakhand",
+          "Himachal Pradesh",
+          "Sikkim",
+          "Arunachal Pradesh",
+          "Jammu and Kashmir",
+          "West Bengal",
+        ];
+
+        // Normalize state names
+        let matchedState = supportedStates.find(
+          (state) =>
+            state.toLowerCase() ===
+            stateName.toLowerCase()
+        );
+
+        // Handle common naming variations
+        if (
+          !matchedState &&
+          stateName.toLowerCase().includes("uttarakhand")
+        ) {
+          matchedState = "Uttarakhand";
+        }
+
+        if (
+          !matchedState &&
+          stateName.toLowerCase().includes("himachal")
+        ) {
+          matchedState = "Himachal Pradesh";
+        }
+
+        if (
+          !matchedState &&
+          stateName.toLowerCase().includes("sikkim")
+        ) {
+          matchedState = "Sikkim";
+        }
+
+        if (
+          !matchedState &&
+          stateName.toLowerCase().includes("arunachal")
+        ) {
+          matchedState = "Arunachal Pradesh";
+        }
+
+        if (
+          !matchedState &&
+          stateName.toLowerCase().includes("jammu")
+        ) {
+          matchedState = "Jammu and Kashmir";
+        }
+
+        if (
+          !matchedState &&
+          stateName.toLowerCase().includes("west bengal")
+        ) {
+          matchedState = "West Bengal";
+        }
+
+        if (!matchedState) {
+          setLocationError(
+            isHindi
+              ? `आपका स्थान (${stateName || "अज्ञात"}) अभी सिस्टम में उपलब्ध नहीं है।`
+              : `Your location (${stateName || "unknown"}) is not currently available in the system.`
+          );
+
+          setGettingLocation(false);
+          return;
+        }
+
+        // -------------------------------------------------
+        // Districts currently supported by this homepage
+        // -------------------------------------------------
+
+        const districtMap = {
+          Uttarakhand: [
+            "Dehradun",
+            "Chamoli",
+            "Rudraprayag",
+            "Pauri Garhwal",
+          ],
+
+          "Himachal Pradesh": [
+            "Shimla",
+            "Kullu",
+            "Mandi",
+            "Kangra",
+          ],
+
+          Sikkim: [
+            "Gangtok",
+            "Mangan",
+            "Namchi",
+          ],
+
+          "Arunachal Pradesh": [
+            "Tawang",
+            "West Kameng",
+            "East Siang",
+          ],
+
+          "Jammu and Kashmir": [
+            "Srinagar",
+            "Anantnag",
+            "Kupwara",
+          ],
+
+          "West Bengal": [
+            "Darjeeling",
+            "Kalimpong",
+            "Jalpaiguri",
+          ],
+        };
+
+        const availableDistricts =
+          districtMap[matchedState] || [];
+
+        const matchedDistrict =
+          availableDistricts.find(
+            (district) =>
+              district.toLowerCase() ===
+              districtName.toLowerCase()
+          );
+
+        // -------------------------------------------------
+        // If exact district isn't available,
+        // use the first available district for the state.
+        // -------------------------------------------------
+
+        const finalDistrict =
+          matchedDistrict ||
+          availableDistricts[0] ||
+          "";
+
+        // -------------------------------------------------
+        // Village values currently available in your demo
+        // -------------------------------------------------
+
+        const villageMap = {
+          Dehradun: [
+            "Doiwala",
+            "Raipur",
+            "Sahaspur",
+          ],
+
+          Chamoli: [
+            "Joshimath",
+            "Gopeshwar",
+            "Karanprayag",
+          ],
+
+          Shimla: [
+            "Shimla Urban",
+            "Theog",
+            "Rampur",
+          ],
+
+          Kullu: [
+            "Manali",
+            "Banjar",
+            "Bhuntar",
+          ],
+
+          Gangtok: [
+            "Gangtok Urban",
+            "Rumtek",
+          ],
+
+          Darjeeling: [
+            "Darjeeling Town",
+            "Kurseong",
+          ],
+        };
+
+        const availableVillages =
+          villageMap[finalDistrict] || [];
+
+        const matchedVillage =
+          availableVillages.find(
+            (village) =>
+              village.toLowerCase() ===
+              villageName.toLowerCase()
+          );
+
+        const finalVillage =
+          matchedVillage ||
+          availableVillages[0] ||
+          "";
+
+        setLocation({
+          state: matchedState,
+          district: finalDistrict,
+          village: finalVillage,
+        });
+
+        setRiskChecked(true);
+
+        setLocationError("");
+
+      } catch (error) {
+        console.error(
+          "Location detection error:",
+          error
+        );
+
+        setLocationError(
+          isHindi
+            ? "आपके स्थान की जानकारी प्राप्त नहीं की जा सकी। कृपया दोबारा प्रयास करें।"
+            : "Unable to determine your location. Please try again."
+        );
+      } finally {
+        setGettingLocation(false);
+      }
+    },
+
+    (error) => {
+      console.error(
+        "Geolocation error:",
+        error
+      );
+
+      let message;
+
+      if (error.code === 1) {
+        message = isHindi
+          ? "कृपया स्थान की अनुमति दें।"
+          : "Please allow location access.";
+      } else if (error.code === 2) {
+        message = isHindi
+          ? "आपका स्थान निर्धारित नहीं किया जा सका।"
+          : "Your location could not be determined.";
+      } else if (error.code === 3) {
+        message = isHindi
+          ? "स्थान प्राप्त करने में समय समाप्त हो गया।"
+          : "Location request timed out.";
+      } else {
+        message = isHindi
+          ? "स्थान प्राप्त करने में समस्या हुई।"
+          : "There was a problem getting your location.";
+      }
+
+      setLocationError(message);
+      setGettingLocation(false);
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 300000,
+    }
+  );
+};
+
   // =====================================================
   // RISK CHECK
   // =====================================================
@@ -371,6 +689,35 @@ function Home() {
               </div>
 
               <div className="location-form">
+                {/* GET MY LOCATION */}
+
+<button
+  type="button"
+  className="get-location-button"
+  onClick={handleGetMyLocation}
+  disabled={gettingLocation}
+>
+  <MapPin size={18} />
+
+  <span>
+    {gettingLocation
+      ? isHindi
+        ? "स्थान प्राप्त किया जा रहा है..."
+        : "Getting your location..."
+      : isHindi
+        ? "मेरी वर्तमान स्थिति प्राप्त करें"
+        : "Get My Location"}
+  </span>
+</button>
+
+{locationError && (
+  <div
+    className="location-error"
+    role="alert"
+  >
+    {locationError}
+  </div>
+)}
 
                 {/* STATE */}
                 <div className="form-group">

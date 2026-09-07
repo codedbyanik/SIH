@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Search,
   Accessibility,
@@ -30,35 +31,46 @@ export default function Header() {
   const [a11yOpen, setA11yOpen] = useState(false);
   const a11yRef = useRef(null);
 
-  // ================================
-  // CLOSE ACCESSIBILITY PANEL ON
-  // OUTSIDE CLICK / ESCAPE
-  // ================================
+  // =========================================
+  // CLOSE ACCESSIBILITY PANEL
+  // =========================================
   useEffect(() => {
     if (!a11yOpen) return;
 
     const handleClickOutside = (e) => {
-      if (a11yRef.current && !a11yRef.current.contains(e.target)) {
+      if (
+        a11yRef.current &&
+        !a11yRef.current.contains(e.target)
+      ) {
         setA11yOpen(false);
       }
     };
 
     const handleEscape = (e) => {
-      if (e.key === "Escape") setA11yOpen(false);
+      if (e.key === "Escape") {
+        setA11yOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+
+      document.removeEventListener(
+        "keydown",
+        handleEscape
+      );
     };
   }, [a11yOpen]);
 
-  // ================================
+  // =========================================
   // SCREEN READER
-  // ================================
+  // =========================================
   const speakPage = () => {
     if (!("speechSynthesis" in window)) {
       alert(
@@ -71,13 +83,15 @@ export default function Header() {
 
     window.speechSynthesis.cancel();
 
-    const mainContent = document.getElementById("main-content");
+    const mainContent =
+      document.getElementById("main-content");
 
     const text = mainContent
       ? mainContent.innerText
       : document.body.innerText;
 
-    const speech = new SpeechSynthesisUtterance(text);
+    const speech =
+      new SpeechSynthesisUtterance(text);
 
     speech.lang = isHindi ? "hi-IN" : "en-IN";
     speech.rate = 0.9;
@@ -85,22 +99,23 @@ export default function Header() {
     window.speechSynthesis.speak(speech);
   };
 
-  // ================================
+  // =========================================
   // STOP SCREEN READER
-  // ================================
+  // =========================================
   const stopScreenReader = () => {
     if ("speechSynthesis" in window) {
       window.speechSynthesis.cancel();
     }
   };
 
-  // ================================
+  // =========================================
   // SKIP TO MAIN CONTENT
-  // ================================
+  // =========================================
   const handleSkipToContent = (e) => {
     e.preventDefault();
 
-    const mainContent = document.getElementById("main-content");
+    const mainContent =
+      document.getElementById("main-content");
 
     if (mainContent) {
       mainContent.setAttribute("tabindex", "-1");
@@ -116,22 +131,36 @@ export default function Header() {
 
   return (
     <header className="site-header">
+
       {/* =========================================
           NATIONAL TRICOLOR ACCENT STRIP
       ========================================= */}
-      <div className="tricolor-strip" aria-hidden="true" />
+      <div
+        className="tricolor-strip"
+        aria-hidden="true"
+      />
 
       {/* =========================================
-          GOVERNMENT TOP BAR
+          TOP GOVERNMENT-STYLE BAR
       ========================================= */}
       <div className="gov-bar">
         <div className="container gov-bar-content">
 
-          {/* Government Identity */}
+          {/* Project Identity */}
           <div className="gov-identity">
-            <span>भारत सरकार</span>
+            <span>
+              {isHindi
+                ? "स्मार्ट आपदा प्रबंधन"
+                : "Smart Disaster Management"}
+            </span>
+
             <span>|</span>
-            <span>Government of India</span>
+
+            <span>
+              {isHindi
+                ? "प्रारंभिक चेतावनी प्रणाली"
+                : "Early Warning System"}
+            </span>
           </div>
 
           {/* Government Tools */}
@@ -179,54 +208,68 @@ export default function Header() {
       <div className="branding">
         <div className="container branding-content">
 
-          {/* Left Branding */}
+          {/* =====================================
+              LEFT BRANDING
+          ===================================== */}
           <div className="brand-section">
 
-            {/* Government Emblem */}
-            <img
-              src="/assets/images/state-emblem.png"
-              alt={
-                isHindi
-                  ? "भारत का राजकीय चिन्ह"
-                  : "State Emblem of India"
-              }
-              className="state-emblem"
-            />
+            {/* =====================================
+                CUSTOM PROJECT LOGO
+                File:
+                public/assets/images/logo.png
+            ===================================== */}
+            <div className="custom-project-logo">
+              <img
+                src="/assets/images/logo.png"
+                alt="Smart Disaster Management and Flash Flood Early Warning System"
+                className="disaster-logo"
+              />
+            </div>
 
-            {/* Branding Text */}
+            {/* =====================================
+                PROJECT TEXT
+            ===================================== */}
             <div className="brand-text">
 
-              {/* Hindi Department Name */}
+              {/* Main Organization / Platform */}
               <div className="hindi-title">
-                गृह मंत्रालय
+                {isHindi
+                  ? "स्मार्ट आपदा प्रबंधन"
+                  : "SMART DISASTER MANAGEMENT"}
               </div>
 
-              {/* Official English Department Name */}
+              {/* Technology Label */}
               <div className="english-title">
-                MINISTRY OF HOME AFFAIRS
+                {isHindi
+                  ? "प्रारंभिक चेतावनी एवं जोखिम निगरानी"
+                  : "EARLY WARNING & RISK MONITORING"}
               </div>
 
-              {/* Project Name */}
+              {/* Main Project Name */}
               <div className="project-title">
                 {isHindi
                   ? "अचानक बाढ़ पूर्व चेतावनी प्रणाली"
                   : "Flash Flood Early Warning System"}
               </div>
 
-              {/* Division */}
+              {/* Project Subtitle */}
               <div className="project-subtitle">
                 {isHindi
-                  ? "आपदा प्रबंधन प्रभाग"
-                  : "Disaster Management Division"}
+                  ? "सुरक्षित समुदाय • स्मार्ट तकनीक • त्वरित प्रतिक्रिया"
+                  : "Safer Communities • Smart Technology • Faster Response"}
               </div>
 
             </div>
           </div>
 
-          {/* Right Branding Actions */}
+          {/* =========================================
+              RIGHT BRANDING ACTIONS
+          ========================================= */}
           <div className="brand-actions">
 
-            {/* Search */}
+            {/* =====================================
+                SEARCH
+            ===================================== */}
             <button
               type="button"
               className="search-button"
@@ -244,15 +287,27 @@ export default function Header() {
               <Search size={20} />
             </button>
 
-            {/* Accessibility */}
-            <div className="a11y-wrap" ref={a11yRef}>
+            {/* =====================================
+                ACCESSIBILITY
+            ===================================== */}
+            <div
+              className="a11y-wrap"
+              ref={a11yRef}
+            >
+
               <button
                 type="button"
-                className={`accessibility-button ${a11yOpen ? "is-active" : ""}`}
+                className={`accessibility-button ${
+                  a11yOpen ? "is-active" : ""
+                }`}
                 aria-haspopup="true"
                 aria-expanded={a11yOpen}
                 aria-controls="a11y-panel"
-                onClick={() => setA11yOpen((open) => !open)}
+                onClick={() =>
+                  setA11yOpen(
+                    (open) => !open
+                  )
+                }
                 aria-label={
                   isHindi
                     ? "पहुंच-योग्यता विकल्प"
@@ -265,6 +320,7 @@ export default function Header() {
                 }
               >
                 <Accessibility size={19} />
+
                 <span>
                   {isHindi
                     ? "पहुंच-योग्यता"
@@ -272,6 +328,9 @@ export default function Header() {
                 </span>
               </button>
 
+              {/* =================================
+                  ACCESSIBILITY PANEL
+              ================================= */}
               {a11yOpen && (
                 <div
                   id="a11y-panel"
@@ -283,95 +342,236 @@ export default function Header() {
                       : "Accessibility options"
                   }
                 >
+
+                  {/* Panel Header */}
                   <div className="a11y-panel-head">
+
                     <span>
-                      {isHindi ? "पहुंच-योग्यता विकल्प" : "Accessibility Options"}
+                      {isHindi
+                        ? "पहुंच-योग्यता विकल्प"
+                        : "Accessibility Options"}
                     </span>
+
                     <button
                       type="button"
                       className="a11y-close"
-                      onClick={() => setA11yOpen(false)}
-                      aria-label={isHindi ? "बंद करें" : "Close"}
+                      onClick={() =>
+                        setA11yOpen(false)
+                      }
+                      aria-label={
+                        isHindi
+                          ? "बंद करें"
+                          : "Close"
+                      }
                     >
                       <X size={16} />
                     </button>
+
                   </div>
 
-                  {/* Text size */}
+                  {/* =================================
+                      TEXT SIZE
+                  ================================= */}
                   <div className="a11y-option">
+
                     <span className="a11y-option-label">
-                      <Type size={16} aria-hidden="true" />
-                      {isHindi ? "टेक्स्ट आकार" : "Text Size"}
+
+                      <Type
+                        size={16}
+                        aria-hidden="true"
+                      />
+
+                      {isHindi
+                        ? "टेक्स्ट आकार"
+                        : "Text Size"}
+
                     </span>
+
                     <div className="a11y-font-group">
-                      <button type="button" onClick={decreaseFont} aria-label={isHindi ? "छोटा करें" : "Decrease"}>
+
+                      <button
+                        type="button"
+                        onClick={decreaseFont}
+                        aria-label={
+                          isHindi
+                            ? "छोटा करें"
+                            : "Decrease"
+                        }
+                      >
                         A-
                       </button>
-                      <button type="button" onClick={resetFont} aria-label={isHindi ? "सामान्य" : "Reset"}>
+
+                      <button
+                        type="button"
+                        onClick={resetFont}
+                        aria-label={
+                          isHindi
+                            ? "सामान्य"
+                            : "Reset"
+                        }
+                      >
                         A
                       </button>
-                      <button type="button" onClick={increaseFont} aria-label={isHindi ? "बड़ा करें" : "Increase"}>
+
+                      <button
+                        type="button"
+                        onClick={increaseFont}
+                        aria-label={
+                          isHindi
+                            ? "बड़ा करें"
+                            : "Increase"
+                        }
+                      >
                         A+
                       </button>
+
                     </div>
                   </div>
 
-                  {/* High contrast */}
+                  {/* =================================
+                      HIGH CONTRAST
+                  ================================= */}
                   <button
                     type="button"
                     className="a11y-toggle-row"
                     onClick={toggleHighContrast}
                     aria-pressed={highContrast}
                   >
+
                     <span className="a11y-option-label">
-                      <Contrast size={16} aria-hidden="true" />
-                      {isHindi ? "उच्च कंट्रास्ट मोड" : "High Contrast Mode"}
+
+                      <Contrast
+                        size={16}
+                        aria-hidden="true"
+                      />
+
+                      {isHindi
+                        ? "उच्च कंट्रास्ट मोड"
+                        : "High Contrast Mode"}
+
                     </span>
-                    <span className={`a11y-switch ${highContrast ? "is-on" : ""}`}>
+
+                    <span
+                      className={`a11y-switch ${
+                        highContrast
+                          ? "is-on"
+                          : ""
+                      }`}
+                    >
                       <span className="a11y-switch-dot" />
                     </span>
+
                   </button>
 
-                  {/* Reduce motion */}
+                  {/* =================================
+                      REDUCE MOTION
+                  ================================= */}
                   <button
                     type="button"
                     className="a11y-toggle-row"
                     onClick={toggleReduceMotion}
                     aria-pressed={reduceMotion}
                   >
+
                     <span className="a11y-option-label">
-                      <Waves size={16} aria-hidden="true" />
-                      {isHindi ? "गति कम करें" : "Reduce Motion"}
+
+                      <Waves
+                        size={16}
+                        aria-hidden="true"
+                      />
+
+                      {isHindi
+                        ? "गति कम करें"
+                        : "Reduce Motion"}
+
                     </span>
-                    <span className={`a11y-switch ${reduceMotion ? "is-on" : ""}`}>
+
+                    <span
+                      className={`a11y-switch ${
+                        reduceMotion
+                          ? "is-on"
+                          : ""
+                      }`}
+                    >
                       <span className="a11y-switch-dot" />
                     </span>
+
                   </button>
 
-                  {/* Screen reader */}
+                  {/* =================================
+                      SCREEN READER
+                  ================================= */}
                   <div className="a11y-option">
+
                     <span className="a11y-option-label">
-                      <Volume2 size={16} aria-hidden="true" />
-                      {isHindi ? "पृष्ठ पढ़ें" : "Read Page Aloud"}
+
+                      <Volume2
+                        size={16}
+                        aria-hidden="true"
+                      />
+
+                      {isHindi
+                        ? "पृष्ठ पढ़ें"
+                        : "Read Page Aloud"}
+
                     </span>
+
                     <div className="a11y-font-group">
-                      <button type="button" onClick={speakPage} aria-label={isHindi ? "पढ़ना शुरू करें" : "Start reading"}>
+
+                      {/* Start */}
+                      <button
+                        type="button"
+                        onClick={speakPage}
+                        aria-label={
+                          isHindi
+                            ? "पढ़ना शुरू करें"
+                            : "Start reading"
+                        }
+                      >
                         <Volume2 size={14} />
                       </button>
-                      <button type="button" onClick={stopScreenReader} aria-label={isHindi ? "पढ़ना बंद करें" : "Stop reading"}>
+
+                      {/* Stop */}
+                      <button
+                        type="button"
+                        onClick={stopScreenReader}
+                        aria-label={
+                          isHindi
+                            ? "पढ़ना बंद करें"
+                            : "Stop reading"
+                        }
+                      >
                         <VolumeX size={14} />
                       </button>
+
                     </div>
                   </div>
 
+                  {/* =================================
+                      ACCESSIBILITY NOTE
+                  ================================= */}
                   <p className="a11y-note">
                     {isHindi
                       ? "आपकी प्राथमिकताएं इस डिवाइस पर सुरक्षित रहती हैं।"
                       : "Your preferences are saved on this device."}
                   </p>
+
                 </div>
               )}
+
             </div>
+
+            {/* =====================================
+                OFFICIAL LOGIN
+            ===================================== */}
+            <Link
+              to="/official/login"
+              className="header-login-button"
+            >
+              {isHindi
+                ? "आधिकारिक लॉगिन"
+                : "Official Login"}
+            </Link>
 
           </div>
         </div>
