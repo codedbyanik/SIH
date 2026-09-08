@@ -4652,7 +4652,7 @@ body.underline-links a {
 }
 
 html {
-  font-size: calc(16px * var(--accessibility-font-scale, 1));
+  font-size: 16px;
 }
 
 body {
@@ -5471,6 +5471,15 @@ input {
   text-decoration: underline;
 }
 
+.footer-problem-statement {
+  display: block;
+  font-size: 0.74rem;
+  color: #9db3c7;
+  padding-top: 8px;
+  margin-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .footer-bottom {
   background: rgba(0, 0, 0, 0.18);
 }
@@ -5489,34 +5498,29 @@ input {
   color: #9db3c7;
 }
 
-body {
-  padding-bottom: 32px;
-}
-
-.prototype-banner {
-  position: fixed;
-  bottom: 0;
-  left: 0;
+/* =========================================================
+   PROTOTYPE STRIP — embedded in header (not fixed), so it is
+   visible immediately without requiring a scroll to the footer.
+   ========================================================= */
+.header-prototype-strip {
   width: 100%;
-  z-index: 9999;
-
   box-sizing: border-box;
-  padding: 7px 16px;
+  padding: 5px 16px;
 
   background: #fff3cd;
   color: #664d03;
-  border-top: 1px solid #ffe69c;
+  border-bottom: 1px solid #ffe69c;
 
   text-align: center;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   line-height: 1.4;
 }
 
 @media (max-width: 600px) {
-  .prototype-banner {
-    padding: 6px 10px;
-    font-size: 11px;
+  .header-prototype-strip {
+    padding: 5px 10px;
+    font-size: 10.5px;
   }
 }
 
@@ -6790,6 +6794,18 @@ html.reduce-motion *::after {
   z-index: 1;
 }
 
+/* Container for the hero pill badges — without this, the
+   inline-flex pills below sit flush against each other with
+   no spacing or wrap allowance, which is what made them look
+   congested on the home page. */
+.hero-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-top: 24px;
+}
+
 .hero-highlight,
 .gov-badge,
 .official-badge,
@@ -7208,66 +7224,211 @@ html.reduce-motion *::after {
   gap: 18px;
 }
 
-/* =====================================================
-   GET MY LOCATION
-===================================================== */
 
-.get-location-button {
-  width: 100%;
-  min-height: 48px;
 
+
+/* =========================================
+   GLOBAL LOCATION SYSTEM
+   (LocationGate + LocationBadge — additive only,
+   does not modify any existing rules above)
+========================================= */
+
+.location-gate-overlay {
+  min-height: calc(100vh - 200px);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  padding: 40px 16px;
+  background: var(--surface);
+}
 
-  margin-bottom: 16px;
-  padding: 0 16px;
+.location-gate-card {
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+}
 
-  border: 1px solid #0b4168;
-  border-radius: 9px;
-
+.location-gate-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
   background: #ffffff;
-  color: #0b4168;
-
-  font-size: 0.92rem;
-  font-weight: 700;
-
+  color: var(--text-muted);
   cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
 }
 
-.get-location-button:hover {
-  background: #0b4168;
-  color: #ffffff;
+.location-gate-secondary-button {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.get-location-button:disabled {
-  opacity: 0.65;
-  cursor: wait;
+.location-gate-secondary-button:hover {
+  background: var(--surface);
 }
 
-.get-location-button svg {
-  flex-shrink: 0;
+.location-gate-secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
-.location-error {
-  margin-top: -8px;
-  margin-bottom: 14px;
+.location-gate-spin {
+  animation: location-gate-spin 0.9s linear infinite;
+}
 
+@keyframes location-gate-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.location-gate-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 12px;
+  border: 1px solid var(--critical);
+  border-radius: 4px;
+  background: var(--critical-light);
+  color: var(--critical);
+  font-size: 13px;
+}
 
-  border-radius: 7px;
+.location-gate-result {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
 
-  background: #fff4f4;
-  border: 1px solid #f0caca;
+.location-gate-result-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--text);
+}
 
-  color: #a52828;
+.location-gate-result-row small {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
 
-  font-size: 0.82rem;
-  line-height: 1.4;
+.location-gate-result-row strong {
+  display: block;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.location-gate-note {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.location-gate-note-success {
+  color: var(--safe);
+}
+
+/* Location badge shown on individual pages */
+
+.page-location-badge {
+  margin-bottom: 20px;
+}
+
+.location-badge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #ffffff;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.location-badge-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.location-badge-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--warning);
+  font-size: 12px;
+}
+
+.location-badge-change {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.location-badge-change:hover {
+  background: var(--primary-light);
+}
+
+@media (max-width: 720px) {
+  .location-gate-overlay {
+    padding: 24px 12px;
+  }
+
+  .location-badge {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .location-badge-change {
+    margin-left: 0;
+  }
+}
+
+.alert-near-you-tag {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
 }

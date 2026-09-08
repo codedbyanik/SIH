@@ -4,6 +4,9 @@ import Header from "./components/layout/Header";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 
+import { useActiveLocation } from "./LocationContext.jsx";
+import LocationGate from "./components/location/LocationGate.jsx";
+
 import Home from "./pages/Home";
 import Alerts from "./pages/Alerts";
 import RiskMap from "./pages/RiskMap";
@@ -28,11 +31,18 @@ import ProtectedRoute from "./components/official/ProtectedRoute.jsx";
 import "./official/styles/official.css";
 
 function CitizenLayout({ children }) {
+  const { hasLocation, isChangingLocation } = useActiveLocation();
+
+  // Ask for a location once, before any citizen page is shown, and
+  // again if the user explicitly asks to change it. Header/Navbar/
+  // Footer stay exactly as before either way.
+  const showLocationGate = !hasLocation || isChangingLocation;
+
   return (
     <>
       <Header />
       <Navbar />
-      <main>{children}</main>
+      <main>{showLocationGate ? <LocationGate /> : children}</main>
       <Footer />
     </>
   );

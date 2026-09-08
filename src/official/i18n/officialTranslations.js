@@ -16,6 +16,20 @@ export const officialTranslations = {
     secureGovPortal: "Secure Government Portal",
     officialPortal: "Official Portal",
 
+    // Header branding (Citizen-aligned)
+    smartDisasterManagement: "Smart Disaster Management",
+    earlyWarningSystemShort: "Early Warning System",
+    brandTitleMain: "SMART DISASTER MANAGEMENT",
+    brandTitleSub: "EARLY WARNING & RISK MONITORING",
+    brandTagline: "Safer Communities • Smart Technology • Faster Response",
+
+    // Accessibility menu
+    accessibilityOptions: "Accessibility Options",
+    decrease: "Decrease",
+    increase: "Increase",
+    reset: "Reset",
+    preferencesSaved: "Your preferences are saved on this device.",
+
     // Sidebar
     mainMenu: "Main Menu",
     system: "System",
@@ -93,6 +107,14 @@ export const officialTranslations = {
     allSeverities: "All Severities",
     allStatuses: "All Statuses",
     createAlert: "Create Alert",
+    createAlertModalTitle: "Create New Alert",
+    alertType: "Alert Type",
+    message: "Message / Details",
+    selectLocation: "Select location",
+    selectType: "Select alert type",
+    selectSeverity: "Select severity",
+    selectStatus: "Select status",
+    fillRequiredFields: "Please fill in all required fields.",
     critical: "Critical",
     high: "High",
     moderate: "Moderate",
@@ -150,6 +172,13 @@ export const officialTranslations = {
     lastGenerated: "Last Generated",
     generate: "Generate",
     download: "Download",
+    reportViewTitle: "Report Details",
+    reportSummary: "Report Summary",
+    totalAlerts: "Total Alerts",
+    alertsBySeverity: "Alerts by Severity",
+    alertsByStatus: "Alerts by Status",
+    includedAlerts: "Alerts Included",
+    justNow: "Just now",
 
     // Officials & users
     usersTitle: "Officials & Users",
@@ -194,6 +223,20 @@ export const officialTranslations = {
     division: "आपदा प्रबंधन प्रभाग",
     secureGovPortal: "सुरक्षित सरकारी पोर्टल",
     officialPortal: "आधिकारिक पोर्टल",
+
+    // Header branding (Citizen-aligned)
+    smartDisasterManagement: "स्मार्ट आपदा प्रबंधन",
+    earlyWarningSystemShort: "प्रारंभिक चेतावनी प्रणाली",
+    brandTitleMain: "स्मार्ट आपदा प्रबंधन",
+    brandTitleSub: "प्रारंभिक चेतावनी एवं जोखिम निगरानी",
+    brandTagline: "सुरक्षित समुदाय • स्मार्ट तकनीक • त्वरित प्रतिक्रिया",
+
+    // Accessibility menu
+    accessibilityOptions: "पहुंच-योग्यता विकल्प",
+    decrease: "छोटा करें",
+    increase: "बड़ा करें",
+    reset: "सामान्य",
+    preferencesSaved: "आपकी प्राथमिकताएं इस डिवाइस पर सुरक्षित रहती हैं।",
 
     mainMenu: "मुख्य मेनू",
     system: "सिस्टम",
@@ -266,6 +309,14 @@ export const officialTranslations = {
     allSeverities: "सभी गंभीरता स्तर",
     allStatuses: "सभी स्थितियाँ",
     createAlert: "अलर्ट बनाएं",
+    createAlertModalTitle: "नया अलर्ट बनाएं",
+    alertType: "अलर्ट प्रकार",
+    message: "संदेश / विवरण",
+    selectLocation: "स्थान चुनें",
+    selectType: "अलर्ट प्रकार चुनें",
+    selectSeverity: "गंभीरता चुनें",
+    selectStatus: "स्थिति चुनें",
+    fillRequiredFields: "कृपया सभी आवश्यक फ़ील्ड भरें।",
     critical: "गंभीर",
     high: "उच्च",
     moderate: "मध्यम",
@@ -318,6 +369,13 @@ export const officialTranslations = {
     lastGenerated: "अंतिम बार तैयार",
     generate: "तैयार करें",
     download: "डाउनलोड करें",
+    reportViewTitle: "रिपोर्ट विवरण",
+    reportSummary: "रिपोर्ट सारांश",
+    totalAlerts: "कुल अलर्ट",
+    alertsBySeverity: "गंभीरता अनुसार अलर्ट",
+    alertsByStatus: "स्थिति अनुसार अलर्ट",
+    includedAlerts: "शामिल अलर्ट",
+    justNow: "अभी अभी",
 
     usersTitle: "अधिकारी और उपयोगकर्ता",
     usersSubtitle: "आधिकारिक खातों, भूमिकाओं और पहुंच स्तरों का प्रबंधन करें।",

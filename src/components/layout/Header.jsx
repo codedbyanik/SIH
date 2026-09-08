@@ -133,6 +133,16 @@ export default function Header() {
     <header className="site-header">
 
       {/* =========================================
+          PROTOTYPE STRIP (minimized, always visible)
+      ========================================= */}
+      <div className="header-prototype-strip">
+        ⚠️{" "}
+        {isHindi
+          ? "प्रोटोटाइप — स्मार्ट इंडिया हैकाथॉन 2026 | समस्या विवरण: SIH26192"
+          : "Prototype — Smart India Hackathon 2026 | Problem Statement: SIH26192"}
+      </div>
+
+      {/* =========================================
           NATIONAL TRICOLOR ACCENT STRIP
       ========================================= */}
       <div

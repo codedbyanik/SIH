@@ -1,13 +1,15 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Menu, RefreshCw, LogOut, Minus, Plus } from "lucide-react";
+import { Menu, RefreshCw, LogOut } from "lucide-react";
 import { useOfficialLanguage } from "../../official/i18n/useOfficialLanguage.js";
 import { useOfficialAuth } from "../../official/context/OfficialAuthContext.jsx";
 
 /* =========================================================
    OfficialTopbar
    Single topbar for authenticated Official Portal pages:
-   breadcrumb, language switch, font-size controls, refresh
-   and logout. Rendered once by OfficialLayout.
+   breadcrumb, language switch, refresh and logout. Font-size
+   and other accessibility controls live in the single
+   Accessibility menu in OfficialHeader — not duplicated here.
+   Rendered once by OfficialLayout.
    ========================================================= */
 
 const PAGE_KEY_BY_PATH = {
@@ -23,7 +25,7 @@ const PAGE_KEY_BY_PATH = {
 };
 
 export default function OfficialTopbar({ onMenuClick }) {
-  const { isHindi, changeLanguage, increaseFont, decreaseFont, t } = useOfficialLanguage();
+  const { isHindi, changeLanguage, t } = useOfficialLanguage();
   const { logout } = useOfficialAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -60,36 +62,7 @@ export default function OfficialTopbar({ onMenuClick }) {
       </div>
 
       <div className="official-topbar-right">
-        <div className="official-font-controls" role="group" aria-label={t("fontSize")}>
-          <button type="button" onClick={decreaseFont} aria-label="A-" title="A-">
-            <Minus size={12} aria-hidden="true" />
-            <span>A</span>
-          </button>
-          <button type="button" className="official-font-mid" disabled aria-hidden="true">
-            A
-          </button>
-          <button type="button" onClick={increaseFont} aria-label="A+" title="A+">
-            <Plus size={12} aria-hidden="true" />
-            <span>A</span>
-          </button>
-        </div>
-
-        <div className="official-lang-switch" role="group" aria-label={t("language")}>
-          <button
-            type="button"
-            className={!isHindi ? "is-active" : ""}
-            onClick={() => changeLanguage("en")}
-          >
-            {t("english")}
-          </button>
-          <button
-            type="button"
-            className={isHindi ? "is-active" : ""}
-            onClick={() => changeLanguage("hi")}
-          >
-            {t("hindi")}
-          </button>
-        </div>
+        
 
         <button type="button" className="official-icon-button" onClick={handleRefresh} aria-label={t("refresh")} title={t("refresh")}>
           <RefreshCw size={16} aria-hidden="true" />

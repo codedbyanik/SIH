@@ -12,228 +12,14 @@ import {
 } from "lucide-react";
 
 import { useLanguage } from "../LanguageContext.jsx";
-
-const shelterData = {
-  "West Bengal": {
-    Darjeeling: [
-      {
-        name: "Darjeeling Town Community Hall",
-        type: "Emergency Shelter",
-        address: "Chowrasta Road, Darjeeling",
-        distance: "1.2 km",
-        capacity: 250,
-        available: 84,
-        status: "Available",
-        phone: "112",
-        facilities: ["Drinking Water", "First Aid", "Accessible"],
-
-        // Demo coordinates
-        lat: 27.041,
-        lng: 88.2663,
-        village: "Darjeeling Town",
-      },
-      {
-        name: "Darjeeling Municipal Relief Centre",
-        type: "Relief Centre",
-        address: "Lebong Cart Road, Darjeeling",
-        distance: "2.8 km",
-        capacity: 180,
-        available: 42,
-        status: "Available",
-        phone: "1070",
-        facilities: ["Drinking Water", "Medical Aid"],
-
-        lat: 27.0365,
-        lng: 88.258,
-        village: "Darjeeling Town",
-      },
-      {
-        name: "Ghoom Community Centre",
-        type: "Emergency Shelter",
-        address: "Ghoom, Darjeeling",
-        distance: "5.1 km",
-        capacity: 120,
-        available: 12,
-        status: "Limited",
-        phone: "112",
-        facilities: ["Drinking Water", "Accessible"],
-
-        lat: 27.005,
-        lng: 88.262,
-        village: "Darjeeling Town",
-      },
-    ],
-
-    Kalimpong: [
-      {
-        name: "Kalimpong Community Hall",
-        type: "Emergency Shelter",
-        address: "Rishi Road, Kalimpong",
-        distance: "1.5 km",
-        capacity: 200,
-        available: 75,
-        status: "Available",
-        phone: "112",
-        facilities: ["Drinking Water", "First Aid", "Accessible"],
-
-        lat: 27.06,
-        lng: 88.47,
-        village: "Kalimpong Town",
-      },
-    ],
-  },
-
-  Sikkim: {
-    Gangtok: [
-      {
-        name: "Gangtok Community Relief Centre",
-        type: "Emergency Shelter",
-        address: "Development Area, Gangtok",
-        distance: "1.8 km",
-        capacity: 300,
-        available: 96,
-        status: "Available",
-        phone: "112",
-        facilities: ["Drinking Water", "Medical Aid", "Accessible"],
-
-        lat: 27.3389,
-        lng: 88.6065,
-        village: "Gangtok",
-      },
-      {
-        name: "Tadong Relief Centre",
-        type: "Relief Centre",
-        address: "Tadong, Gangtok",
-        distance: "4.2 km",
-        capacity: 150,
-        available: 18,
-        status: "Limited",
-        phone: "1070",
-        facilities: ["Drinking Water", "First Aid"],
-
-        lat: 27.316,
-        lng: 88.604,
-        village: "Gangtok",
-      },
-    ],
-
-    Mangan: [
-      {
-        name: "Mangan Community Shelter",
-        type: "Emergency Shelter",
-        address: "Mangan Main Road",
-        distance: "1.1 km",
-        capacity: 160,
-        available: 60,
-        status: "Available",
-        phone: "112",
-        facilities: ["Drinking Water", "First Aid"],
-
-        lat: 27.508,
-        lng: 88.533,
-        village: "Mangan",
-      },
-    ],
-  },
-
-  Uttarakhand: {
-    Dehradun: [
-      {
-        name: "Dehradun Emergency Relief Centre",
-        type: "Emergency Shelter",
-        address: "Rajpur Road, Dehradun",
-        distance: "2.1 km",
-        capacity: 350,
-        available: 110,
-        status: "Available",
-        phone: "112",
-        facilities: ["Drinking Water", "Medical Aid", "Accessible"],
-
-        lat: 30.3165,
-        lng: 78.0322,
-        village: "Dehradun",
-      },
-    ],
-
-    Nainital: [
-      {
-        name: "Nainital Community Shelter",
-        type: "Emergency Shelter",
-        address: "Mallital, Nainital",
-        distance: "1.7 km",
-        capacity: 220,
-        available: 48,
-        status: "Available",
-        phone: "112",
-        facilities: ["Drinking Water", "First Aid"],
-
-        lat: 29.3919,
-        lng: 79.4542,
-        village: "Nainital",
-      },
-    ],
-  },
-
-  Himachal: {
-    Shimla: [
-      {
-        name: "Shimla Disaster Relief Centre",
-        type: "Emergency Shelter",
-        address: "Circular Road, Shimla",
-        distance: "1.9 km",
-        capacity: 280,
-        available: 72,
-        status: "Available",
-        phone: "112",
-        facilities: ["Drinking Water", "Medical Aid", "Accessible"],
-
-        lat: 31.1048,
-        lng: 77.1734,
-        village: "Shimla",
-      },
-    ],
-
-    Kullu: [
-      {
-        name: "Kullu Emergency Shelter",
-        type: "Emergency Shelter",
-        address: "Dhalpur, Kullu",
-        distance: "2.4 km",
-        capacity: 240,
-        available: 36,
-        status: "Limited",
-        phone: "112",
-        facilities: ["Drinking Water", "First Aid"],
-
-        lat: 31.9584,
-        lng: 77.1089,
-        village: "Kullu",
-      },
-    ],
-  },
-};
-
-const villageOptions = {
-  "West Bengal": {
-    Darjeeling: ["Darjeeling Town", "Kurseong", "Mirik"],
-    Kalimpong: ["Kalimpong Town", "Pedong"],
-  },
-
-  Sikkim: {
-    Gangtok: ["Gangtok", "Rumtek"],
-    Mangan: ["Mangan", "Chungthang"],
-  },
-
-  Uttarakhand: {
-    Dehradun: ["Dehradun", "Mussoorie"],
-    Nainital: ["Nainital", "Bhimtal"],
-  },
-
-  Himachal: {
-    Shimla: ["Shimla", "Mashobra"],
-    Kullu: ["Kullu", "Manali"],
-  },
-};
+import { useActiveLocation } from "../LocationContext.jsx";
+import LocationBadge from "../components/location/LocationBadge.jsx";
+import {
+  shelterData,
+  locationHierarchy as villageOptions,
+  haversineDistanceKm as calculateDistance,
+  getAllShelters,
+} from "../data/locationData.js";
 
 const translations = {
   en: {
@@ -395,71 +181,23 @@ const translations = {
   },
 };
 
-
-// ----------------------------------------------------
-// Calculate distance between two GPS coordinates
-// ----------------------------------------------------
-
-const calculateDistance = (lat1, lon1, lat2, lon2) => {
-  const earthRadius = 6371;
-
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-
-  const c =
-    2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return earthRadius * c;
-};
-
-
-// ----------------------------------------------------
-// Get all shelters from the database
-// ----------------------------------------------------
-
-const getAllShelters = () => {
-  const allShelters = [];
-
-  Object.entries(shelterData).forEach(
-    ([state, districts]) => {
-      Object.entries(districts).forEach(
-        ([district, shelters]) => {
-          shelters.forEach((shelter) => {
-            allShelters.push({
-              ...shelter,
-              state,
-              district,
-            });
-          });
-        }
-      );
-    }
-  );
-
-  return allShelters;
-};
-
-
 function Shelters() {
   const { language } = useLanguage();
+  const { activeLocation, selectLocationByCoords } = useActiveLocation();
 
   const t = translations[language] || translations.en;
 
-  const [state, setState] = useState("West Bengal");
+  const [state, setState] = useState(
+    activeLocation?.resolved?.state || "Kerala"
+  );
 
-  const [district, setDistrict] =
-    useState("Darjeeling");
+  const [district, setDistrict] = useState(
+    activeLocation?.resolved?.district || "Wayanad"
+  );
 
-  const [village, setVillage] =
-    useState("Darjeeling Town");
+  const [village, setVillage] = useState(
+    activeLocation?.resolved?.village || "Mundakkai"
+  );
 
   const [search, setSearch] = useState("");
 
@@ -534,6 +272,8 @@ function Shelters() {
           lng: userLng,
         });
 
+        // Keep the app-wide active location in sync with this GPS fix
+        selectLocationByCoords(userLat, userLng);
 
         // Automatically select nearest shelter's area
         setState(nearestShelter.state);
@@ -802,6 +542,7 @@ function Shelters() {
 
         <div className="shelters-container">
 
+          <LocationBadge className="page-location-badge" />
 
           {/* SEARCH PANEL */}
 

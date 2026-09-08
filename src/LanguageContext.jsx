@@ -26,14 +26,14 @@ export function LanguageProvider({ children }) {
     document.documentElement.lang = language === "hi" ? "hi" : "en";
   }, [language]);
 
-  // Font-size settings
+  // Font-size settings — applied as a page-wide zoom so the control
+  // scales every page/layout (citizen and official) consistently,
+  // including elements that don't use rem-based font sizes, while
+  // keeping buttons/forms/nav usable since everything scales together.
   useEffect(() => {
     localStorage.setItem("fontSize", fontSize);
 
-    document.documentElement.style.setProperty(
-      "--accessibility-font-scale",
-      `${fontSize / 100}`
-    );
+    document.body.style.zoom = `${fontSize}%`;
   }, [fontSize]);
 
   // High contrast mode

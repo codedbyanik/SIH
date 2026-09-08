@@ -21,21 +21,36 @@ import {
 } from "lucide-react";
 
 import { useLanguage } from "../LanguageContext.jsx";
+import { useActiveLocation } from "../LocationContext.jsx";
+import LocationBadge from "../components/location/LocationBadge.jsx";
+import {
+  wayanadLocations,
+  getWayanadLocationByName,
+} from "../data/locationData.js";
 
 function Home() {
   const { language } = useLanguage();
 
   const isHindi = language === "hi";
 
-  const [location, setLocation] = useState({
+  const { activeLocation } = useActiveLocation();
+
+  // The app-wide active location (set once via the location gate and
+  // shared across every citizen page) drives both the location display
+  // and the environmental data shown below.
+  const location = activeLocation?.resolved || {
     state: "",
     district: "",
     village: "",
-  });
+  };
+
+  // Real environmental readings (elevation, slope, distance to river,
+  // rainfall) for the active village, falling back to the first
+  // prototype village if nothing is resolved yet.
+  const activeVillageData =
+    getWayanadLocationByName(location.village) || wayanadLocations[0];
 
   const [riskChecked, setRiskChecked] = useState(false);
-  const [gettingLocation, setGettingLocation] = useState(false);
-const [locationError, setLocationError] = useState("");
 
   // =====================================================
   // TRANSLATIONS
@@ -109,6 +124,18 @@ const [locationError, setLocationError] = useState("");
     checkRisk: isHindi
       ? "जोखिम जांचें"
       : "Check Risk",
+
+    elevation: isHindi
+      ? "ऊंचाई"
+      : "Elevation",
+
+    distanceToRiver: isHindi
+      ? "नदी से दूरी"
+      : "Distance to River",
+
+    peakIntensity: isHindi
+      ? "अधिकतम तीव्रता"
+      : "Peak intensity",
 
     currentSituation: isHindi
       ? "वर्तमान स्थिति"
@@ -287,322 +314,6 @@ const [locationError, setLocationError] = useState("");
       : "Get Help",
   };
 
-
-  // =====================================================
-// GET USER'S CURRENT LOCATION
-// =====================================================
-
-const handleGetMyLocation = () => {
-  if (!navigator.geolocation) {
-    setLocationError(
-      isHindi
-        ? "आपके ब्राउज़र में स्थान सेवा उपलब्ध नहीं है।"
-        : "Geolocation is not supported by your browser."
-    );
-    return;
-  }
-
-  setGettingLocation(true);
-  setLocationError("");
-
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
-      try {
-        const { latitude, longitude } = position.coords;
-
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
-          {
-            headers: {
-              Accept: "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Location lookup failed");
-        }
-
-        const data = await response.json();
-
-        const address = data.address || {};
-
-        const stateName =
-          address.state ||
-          address.state_district ||
-          "";
-
-        const districtName =
-          address.state_district ||
-          address.district ||
-          address.county ||
-          "";
-
-        const villageName =
-          address.village ||
-          address.town ||
-          address.city ||
-          address.municipality ||
-          "";
-
-        // -------------------------------------------------
-        // Match the detected location with available demo
-        // locations in the dropdowns.
-        // -------------------------------------------------
-
-        const supportedStates = [
-          "Uttarakhand",
-          "Himachal Pradesh",
-          "Sikkim",
-          "Arunachal Pradesh",
-          "Jammu and Kashmir",
-          "West Bengal",
-        ];
-
-        // Normalize state names
-        let matchedState = supportedStates.find(
-          (state) =>
-            state.toLowerCase() ===
-            stateName.toLowerCase()
-        );
-
-        // Handle common naming variations
-        if (
-          !matchedState &&
-          stateName.toLowerCase().includes("uttarakhand")
-        ) {
-          matchedState = "Uttarakhand";
-        }
-
-        if (
-          !matchedState &&
-          stateName.toLowerCase().includes("himachal")
-        ) {
-          matchedState = "Himachal Pradesh";
-        }
-
-        if (
-          !matchedState &&
-          stateName.toLowerCase().includes("sikkim")
-        ) {
-          matchedState = "Sikkim";
-        }
-
-        if (
-          !matchedState &&
-          stateName.toLowerCase().includes("arunachal")
-        ) {
-          matchedState = "Arunachal Pradesh";
-        }
-
-        if (
-          !matchedState &&
-          stateName.toLowerCase().includes("jammu")
-        ) {
-          matchedState = "Jammu and Kashmir";
-        }
-
-        if (
-          !matchedState &&
-          stateName.toLowerCase().includes("west bengal")
-        ) {
-          matchedState = "West Bengal";
-        }
-
-        if (!matchedState) {
-          setLocationError(
-            isHindi
-              ? `आपका स्थान (${stateName || "अज्ञात"}) अभी सिस्टम में उपलब्ध नहीं है।`
-              : `Your location (${stateName || "unknown"}) is not currently available in the system.`
-          );
-
-          setGettingLocation(false);
-          return;
-        }
-
-        // -------------------------------------------------
-        // Districts currently supported by this homepage
-        // -------------------------------------------------
-
-        const districtMap = {
-          Uttarakhand: [
-            "Dehradun",
-            "Chamoli",
-            "Rudraprayag",
-            "Pauri Garhwal",
-          ],
-
-          "Himachal Pradesh": [
-            "Shimla",
-            "Kullu",
-            "Mandi",
-            "Kangra",
-          ],
-
-          Sikkim: [
-            "Gangtok",
-            "Mangan",
-            "Namchi",
-          ],
-
-          "Arunachal Pradesh": [
-            "Tawang",
-            "West Kameng",
-            "East Siang",
-          ],
-
-          "Jammu and Kashmir": [
-            "Srinagar",
-            "Anantnag",
-            "Kupwara",
-          ],
-
-          "West Bengal": [
-            "Darjeeling",
-            "Kalimpong",
-            "Jalpaiguri",
-          ],
-        };
-
-        const availableDistricts =
-          districtMap[matchedState] || [];
-
-        const matchedDistrict =
-          availableDistricts.find(
-            (district) =>
-              district.toLowerCase() ===
-              districtName.toLowerCase()
-          );
-
-        // -------------------------------------------------
-        // If exact district isn't available,
-        // use the first available district for the state.
-        // -------------------------------------------------
-
-        const finalDistrict =
-          matchedDistrict ||
-          availableDistricts[0] ||
-          "";
-
-        // -------------------------------------------------
-        // Village values currently available in your demo
-        // -------------------------------------------------
-
-        const villageMap = {
-          Dehradun: [
-            "Doiwala",
-            "Raipur",
-            "Sahaspur",
-          ],
-
-          Chamoli: [
-            "Joshimath",
-            "Gopeshwar",
-            "Karanprayag",
-          ],
-
-          Shimla: [
-            "Shimla Urban",
-            "Theog",
-            "Rampur",
-          ],
-
-          Kullu: [
-            "Manali",
-            "Banjar",
-            "Bhuntar",
-          ],
-
-          Gangtok: [
-            "Gangtok Urban",
-            "Rumtek",
-          ],
-
-          Darjeeling: [
-            "Darjeeling Town",
-            "Kurseong",
-          ],
-        };
-
-        const availableVillages =
-          villageMap[finalDistrict] || [];
-
-        const matchedVillage =
-          availableVillages.find(
-            (village) =>
-              village.toLowerCase() ===
-              villageName.toLowerCase()
-          );
-
-        const finalVillage =
-          matchedVillage ||
-          availableVillages[0] ||
-          "";
-
-        setLocation({
-          state: matchedState,
-          district: finalDistrict,
-          village: finalVillage,
-        });
-
-        setRiskChecked(true);
-
-        setLocationError("");
-
-      } catch (error) {
-        console.error(
-          "Location detection error:",
-          error
-        );
-
-        setLocationError(
-          isHindi
-            ? "आपके स्थान की जानकारी प्राप्त नहीं की जा सकी। कृपया दोबारा प्रयास करें।"
-            : "Unable to determine your location. Please try again."
-        );
-      } finally {
-        setGettingLocation(false);
-      }
-    },
-
-    (error) => {
-      console.error(
-        "Geolocation error:",
-        error
-      );
-
-      let message;
-
-      if (error.code === 1) {
-        message = isHindi
-          ? "कृपया स्थान की अनुमति दें।"
-          : "Please allow location access.";
-      } else if (error.code === 2) {
-        message = isHindi
-          ? "आपका स्थान निर्धारित नहीं किया जा सका।"
-          : "Your location could not be determined.";
-      } else if (error.code === 3) {
-        message = isHindi
-          ? "स्थान प्राप्त करने में समय समाप्त हो गया।"
-          : "Location request timed out.";
-      } else {
-        message = isHindi
-          ? "स्थान प्राप्त करने में समस्या हुई।"
-          : "There was a problem getting your location.";
-      }
-
-      setLocationError(message);
-      setGettingLocation(false);
-    },
-
-    {
-      enableHighAccuracy: true,
-      timeout: 15000,
-      maximumAge: 300000,
-    }
-  );
-};
-
   // =====================================================
   // RISK CHECK
   // =====================================================
@@ -689,356 +400,8 @@ const handleGetMyLocation = () => {
               </div>
 
               <div className="location-form">
-                {/* GET MY LOCATION */}
 
-<button
-  type="button"
-  className="get-location-button"
-  onClick={handleGetMyLocation}
-  disabled={gettingLocation}
->
-  <MapPin size={18} />
-
-  <span>
-    {gettingLocation
-      ? isHindi
-        ? "स्थान प्राप्त किया जा रहा है..."
-        : "Getting your location..."
-      : isHindi
-        ? "मेरी वर्तमान स्थिति प्राप्त करें"
-        : "Get My Location"}
-  </span>
-</button>
-
-{locationError && (
-  <div
-    className="location-error"
-    role="alert"
-  >
-    {locationError}
-  </div>
-)}
-
-                {/* STATE */}
-                <div className="form-group">
-
-                  <label>{t.state}</label>
-
-                  <select
-                    value={location.state}
-                    onChange={(e) => {
-                      setLocation({
-                        state: e.target.value,
-                        district: "",
-                        village: "",
-                      });
-
-                      setRiskChecked(false);
-                    }}
-                  >
-                    <option value="">
-                      {t.selectState}
-                    </option>
-
-                    <option value="Uttarakhand">
-                      {isHindi ? "उत्तराखंड" : "Uttarakhand"}
-                    </option>
-
-                    <option value="Himachal Pradesh">
-                      {isHindi
-                        ? "हिमाचल प्रदेश"
-                        : "Himachal Pradesh"}
-                    </option>
-
-                    <option value="Sikkim">
-                      {isHindi ? "सिक्किम" : "Sikkim"}
-                    </option>
-
-                    <option value="Arunachal Pradesh">
-                      {isHindi
-                        ? "अरुणाचल प्रदेश"
-                        : "Arunachal Pradesh"}
-                    </option>
-
-                    <option value="Jammu and Kashmir">
-                      {isHindi
-                        ? "जम्मू और कश्मीर"
-                        : "Jammu and Kashmir"}
-                    </option>
-
-                    <option value="West Bengal">
-                      {isHindi
-                        ? "पश्चिम बंगाल"
-                        : "West Bengal"}
-                    </option>
-                  </select>
-
-                </div>
-
-                {/* DISTRICT */}
-                <div className="form-group">
-
-                  <label>{t.district}</label>
-
-                  <select
-                    value={location.district}
-                    disabled={!location.state}
-                    onChange={(e) => {
-                      setLocation({
-                        ...location,
-                        district: e.target.value,
-                        village: "",
-                      });
-
-                      setRiskChecked(false);
-                    }}
-                  >
-                    <option value="">
-                      {t.selectDistrict}
-                    </option>
-
-                    {location.state === "Uttarakhand" && (
-                      <>
-                        <option value="Dehradun">
-                          {isHindi ? "देहरादून" : "Dehradun"}
-                        </option>
-
-                        <option value="Chamoli">
-                          {isHindi ? "चमोली" : "Chamoli"}
-                        </option>
-
-                        <option value="Rudraprayag">
-                          {isHindi
-                            ? "रुद्रप्रयाग"
-                            : "Rudraprayag"}
-                        </option>
-
-                        <option value="Pauri Garhwal">
-                          {isHindi
-                            ? "पौड़ी गढ़वाल"
-                            : "Pauri Garhwal"}
-                        </option>
-                      </>
-                    )}
-
-                    {location.state === "Himachal Pradesh" && (
-                      <>
-                        <option value="Shimla">
-                          {isHindi ? "शिमला" : "Shimla"}
-                        </option>
-
-                        <option value="Kullu">
-                          {isHindi ? "कुल्लू" : "Kullu"}
-                        </option>
-
-                        <option value="Mandi">
-                          {isHindi ? "मंडी" : "Mandi"}
-                        </option>
-
-                        <option value="Kangra">
-                          {isHindi ? "कांगड़ा" : "Kangra"}
-                        </option>
-                      </>
-                    )}
-
-                    {location.state === "Sikkim" && (
-                      <>
-                        <option value="Gangtok">
-                          {isHindi ? "गंगटोक" : "Gangtok"}
-                        </option>
-
-                        <option value="Mangan">
-                          {isHindi ? "मंगन" : "Mangan"}
-                        </option>
-
-                        <option value="Namchi">
-                          {isHindi ? "नामची" : "Namchi"}
-                        </option>
-                      </>
-                    )}
-
-                    {location.state === "Arunachal Pradesh" && (
-                      <>
-                        <option value="Tawang">
-                          {isHindi ? "तवांग" : "Tawang"}
-                        </option>
-
-                        <option value="West Kameng">
-                          {isHindi
-                            ? "पश्चिम कामेंग"
-                            : "West Kameng"}
-                        </option>
-
-                        <option value="East Siang">
-                          {isHindi
-                            ? "पूर्व सियांग"
-                            : "East Siang"}
-                        </option>
-                      </>
-                    )}
-
-                    {location.state === "Jammu and Kashmir" && (
-                      <>
-                        <option value="Srinagar">
-                          {isHindi ? "श्रीनगर" : "Srinagar"}
-                        </option>
-
-                        <option value="Anantnag">
-                          {isHindi ? "अनंतनाग" : "Anantnag"}
-                        </option>
-
-                        <option value="Kupwara">
-                          {isHindi ? "कुपवाड़ा" : "Kupwara"}
-                        </option>
-                      </>
-                    )}
-
-                    {location.state === "West Bengal" && (
-                      <>
-                        <option value="Darjeeling">
-                          {isHindi
-                            ? "दार्जिलिंग"
-                            : "Darjeeling"}
-                        </option>
-
-                        <option value="Kalimpong">
-                          {isHindi
-                            ? "कालिम्पोंग"
-                            : "Kalimpong"}
-                        </option>
-
-                        <option value="Jalpaiguri">
-                          {isHindi
-                            ? "जलपाईगुड़ी"
-                            : "Jalpaiguri"}
-                        </option>
-                      </>
-                    )}
-
-                  </select>
-
-                </div>
-
-                {/* VILLAGE */}
-                <div className="form-group">
-
-                  <label>{t.villageWard}</label>
-
-                  <select
-                    value={location.village}
-                    disabled={!location.district}
-                    onChange={(e) => {
-                      setLocation({
-                        ...location,
-                        village: e.target.value,
-                      });
-
-                      setRiskChecked(false);
-                    }}
-                  >
-                    <option value="">
-                      {t.selectVillageWard}
-                    </option>
-
-                    {location.district === "Dehradun" && (
-                      <>
-                        <option value="Doiwala">
-                          {isHindi ? "डोईवाला" : "Doiwala"}
-                        </option>
-
-                        <option value="Raipur">
-                          {isHindi ? "रायपुर" : "Raipur"}
-                        </option>
-
-                        <option value="Sahaspur">
-                          {isHindi ? "सहसपुर" : "Sahaspur"}
-                        </option>
-                      </>
-                    )}
-
-                    {location.district === "Chamoli" && (
-                      <>
-                        <option value="Joshimath">
-                          {isHindi ? "जोशीमठ" : "Joshimath"}
-                        </option>
-
-                        <option value="Gopeshwar">
-                          {isHindi ? "गोपीश्वर" : "Gopeshwar"}
-                        </option>
-
-                        <option value="Karanprayag">
-                          {isHindi
-                            ? "कर्णप्रयाग"
-                            : "Karanprayag"}
-                        </option>
-                      </>
-                    )}
-
-                    {location.district === "Shimla" && (
-                      <>
-                        <option value="Shimla Urban">
-                          {isHindi
-                            ? "शिमला शहरी"
-                            : "Shimla Urban"}
-                        </option>
-
-                        <option value="Theog">
-                          {isHindi ? "ठियोग" : "Theog"}
-                        </option>
-
-                        <option value="Rampur">
-                          {isHindi ? "रामपुर" : "Rampur"}
-                        </option>
-                      </>
-                    )}
-
-                    {location.district === "Kullu" && (
-                      <>
-                        <option value="Manali">
-                          {isHindi ? "मनाली" : "Manali"}
-                        </option>
-
-                        <option value="Banjar">
-                          {isHindi ? "बंजार" : "Banjar"}
-                        </option>
-
-                        <option value="Bhuntar">
-                          {isHindi ? "भुंतर" : "Bhuntar"}
-                        </option>
-                      </>
-                    )}
-
-                    {location.district === "Gangtok" && (
-                      <>
-                        <option value="Gangtok Urban">
-                          {isHindi
-                            ? "गंगटोक शहरी"
-                            : "Gangtok Urban"}
-                        </option>
-
-                        <option value="Rumtek">
-                          {isHindi ? "रुमटेक" : "Rumtek"}
-                        </option>
-                      </>
-                    )}
-
-                    {location.district === "Darjeeling" && (
-                      <>
-                        <option value="Darjeeling Town">
-                          {isHindi
-                            ? "दार्जिलिंग टाउन"
-                            : "Darjeeling Town"}
-                        </option>
-
-                        <option value="Kurseong">
-                          {isHindi ? "कर्सियांग" : "Kurseong"}
-                        </option>
-                      </>
-                    )}
-
-                  </select>
-
-                </div>
+                <LocationBadge />
 
                 {/* CHECK RISK */}
                 <button
@@ -1185,12 +548,14 @@ const handleGetMyLocation = () => {
               </div>
 
               <strong>
-                {riskChecked ? "86 mm" : "--"}
+                {riskChecked
+                  ? `${activeVillageData.peak_rainfall_mm} mm`
+                  : "--"}
               </strong>
 
               <p>
                 {riskChecked
-                  ? t.last3Hours
+                  ? t.peakIntensity
                   : t.noLocationSelected}
               </p>
 
@@ -1203,11 +568,13 @@ const handleGetMyLocation = () => {
                   <Droplets size={20} />
                 </div>
 
-                {t.soilMoisture}
+                {t.elevation}
               </div>
 
               <strong>
-                {riskChecked ? "71%" : "--"}
+                {riskChecked
+                  ? `${activeVillageData.elevation_m} m`
+                  : "--"}
               </strong>
 
               <p>
@@ -1230,9 +597,7 @@ const handleGetMyLocation = () => {
 
               <strong>
                 {riskChecked
-                  ? isHindi
-                    ? "मध्यम"
-                    : "Moderate"
+                  ? `${activeVillageData.slope_deg}°`
                   : "--"}
               </strong>
 
@@ -1251,14 +616,12 @@ const handleGetMyLocation = () => {
                   <Waves size={20} />
                 </div>
 
-                {t.waterLevel}
+                {t.distanceToRiver}
               </div>
 
               <strong>
                 {riskChecked
-                  ? isHindi
-                    ? "बढ़ रहा है"
-                    : "Rising"
+                  ? `${activeVillageData.distance_to_river_m} m`
                   : "--"}
               </strong>
 

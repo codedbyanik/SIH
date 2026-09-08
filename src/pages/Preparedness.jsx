@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { useLanguage } from "../LanguageContext.jsx";
+import LocationBadge from "../components/location/LocationBadge.jsx";
 
 const preparednessItems = [
   {
@@ -150,6 +151,8 @@ function Preparedness() {
       {/* Introduction */}
       <section className="content-section">
         <div className="container">
+          <LocationBadge className="page-location-badge" />
+
           <div className="section-heading">
             <span>
               {language === "hi" ? "तैयार रहें" : "BE PREPARED"}

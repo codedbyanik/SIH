@@ -36,12 +36,11 @@
   --official-radius-sm: 4px;
   --official-shadow: 0 1px 2px rgba(22, 40, 61, 0.06);
   --official-font: "Segoe UI", Arial, Helvetica, sans-serif;
-  --official-font-scale: var(--accessibility-font-scale, 1);
 
   font-family: var(--official-font);
   color: var(--official-navy-dark);
   background: var(--official-bg);
-  font-size: calc(15px * var(--official-font-scale));
+  font-size: 15px;
 }
 
 .official-shell *,
@@ -183,11 +182,96 @@
   gap: 14px;
 }
 
-.official-emblem {
+.official-logo {
   width: 48px;
   height: 48px;
   object-fit: contain;
   flex-shrink: 0;
+}
+
+/* =========================================================
+   ACCESSIBILITY MENU (single button, mirrors Citizen Portal)
+   ========================================================= */
+.official-a11y-wrap {
+  position: relative;
+}
+
+.official-accessibility-button.is-active {
+  background: var(--official-saffron);
+  border-color: var(--official-saffron);
+  color: var(--official-navy-dark);
+}
+
+.official-a11y-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  width: 260px;
+  background: var(--official-white);
+  color: var(--official-navy-dark);
+  border: 1px solid var(--official-border);
+  border-radius: var(--official-radius);
+  box-shadow: 0 8px 24px rgba(22, 40, 61, 0.18);
+  padding: 12px;
+}
+
+.official-a11y-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
+.official-a11y-close {
+  background: transparent;
+  border: none;
+  color: var(--official-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.official-a11y-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 0.82rem;
+}
+
+.official-a11y-option-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.official-a11y-font-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.official-a11y-font-group button {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--official-border);
+  border-radius: var(--official-radius-sm);
+  background: var(--official-bg-light);
+  color: var(--official-navy-dark);
+  cursor: pointer;
+}
+
+.official-a11y-note {
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  color: var(--official-text-muted);
 }
 
 .official-brand-text {
@@ -1105,6 +1189,10 @@
   max-width: 380px;
 }
 
+.official-modal-wide {
+  max-width: 760px;
+}
+
 .official-modal-head {
   display: flex;
   align-items: center;
@@ -1997,5 +2085,10 @@
 
   .official-footer-col-right {
     text-align: left;
+  }
+
+  .official-a11y-panel {
+    width: min(260px, calc(100vw - 28px));
+    right: -14px;
   }
 }

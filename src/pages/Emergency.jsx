@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { useLanguage } from "../LanguageContext.jsx";
+import LocationBadge from "../components/location/LocationBadge.jsx";
 
 const Emergency = () => {
   const { language } = useLanguage();
@@ -108,6 +109,8 @@ const Emergency = () => {
 
       {/* Emergency Numbers */}
       <section className="emergency-section">
+        <LocationBadge className="page-location-badge" />
+
         <div className="section-heading">
           <span>
             {isHindi ? "आपातकालीन संपर्क" : "EMERGENCY CONTACTS"}

@@ -15,88 +15,9 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 import { useLanguage } from "../LanguageContext.jsx";
-
-const locations = {
-  "West Bengal": {
-    Darjeeling: ["Darjeeling Town", "Kurseong", "Mirik"],
-    Kalimpong: ["Kalimpong Town", "Pedong"],
-  },
-  Sikkim: {
-    Gangtok: ["Gangtok", "Rumtek"],
-    Mangan: ["Mangan", "Chungthang"],
-  },
-  Uttarakhand: {
-    Dehradun: ["Dehradun", "Mussoorie"],
-    Nainital: ["Nainital", "Bhimtal"],
-  },
-  Himachal: {
-    Shimla: ["Shimla", "Mashobra"],
-    Kullu: ["Kullu", "Manali"],
-  },
-};
-
-const riskZones = [
-  {
-    id: 1,
-    name: "Darjeeling Town",
-    district: "Darjeeling",
-    state: "West Bengal",
-    risk: "High",
-    type: "Flood",
-    rainfall: "86 mm",
-    description: "Heavy rainfall and rising water levels detected.",
-    lat: 27.041,
-    lng: 88.2663,
-  },
-  {
-    id: 2,
-    name: "Kurseong",
-    district: "Darjeeling",
-    state: "West Bengal",
-    risk: "High",
-    type: "Landslide",
-    rainfall: "72 mm",
-    description: "Unstable slopes with high soil moisture.",
-    lat: 26.8817,
-    lng: 88.2822,
-  },
-  {
-    id: 3,
-    name: "Kalimpong",
-    district: "Kalimpong",
-    state: "West Bengal",
-    risk: "Moderate",
-    type: "Flood",
-    rainfall: "61 mm",
-    description: "Moderate rainfall with increasing water levels.",
-    lat: 27.0669,
-    lng: 88.4726,
-  },
-  {
-    id: 4,
-    name: "Gangtok",
-    district: "Gangtok",
-    state: "Sikkim",
-    risk: "Advisory",
-    type: "Weather",
-    rainfall: "48 mm",
-    description: "Changing weather conditions being monitored.",
-    lat: 27.3389,
-    lng: 88.6065,
-  },
-  {
-    id: 5,
-    name: "Manali",
-    district: "Kullu",
-    state: "Himachal",
-    risk: "Moderate",
-    type: "Landslide",
-    rainfall: "55 mm",
-    description: "Slope stability requires continued monitoring.",
-    lat: 32.2432,
-    lng: 77.1892,
-  },
-];
+import { useActiveLocation } from "../LocationContext.jsx";
+import LocationBadge from "../components/location/LocationBadge.jsx";
+import { locationHierarchy as locations, riskZones } from "../data/locationData.js";
 
 // Colored marker icon matching the portal's existing risk-severity classes
 // (.risk-critical / .risk-high / .risk-moderate / .risk-advisory in index.css)
@@ -112,10 +33,17 @@ function getRiskIcon(risk) {
 
 function RiskMap() {
   const { language } = useLanguage();
+  const { activeLocation } = useActiveLocation();
 
-  const [state, setState] = useState("West Bengal");
-  const [district, setDistrict] = useState("Darjeeling");
-  const [village, setVillage] = useState("Darjeeling Town");
+  const [state, setState] = useState(
+    activeLocation?.resolved?.state || "Kerala"
+  );
+  const [district, setDistrict] = useState(
+    activeLocation?.resolved?.district || "Wayanad"
+  );
+  const [village, setVillage] = useState(
+    activeLocation?.resolved?.village || "Mundakkai"
+  );
   const [selectedZone, setSelectedZone] = useState(null);
   const [layer, setLayer] = useState("All");
 
@@ -191,6 +119,8 @@ function RiskMap() {
       {/* MAIN CONTENT */}
       <section className="risk-content">
         <div className="page-container">
+          <LocationBadge className="page-location-badge" />
+
           {/* LOCATION FILTER */}
           <div className="risk-toolbar">
             <div>
@@ -306,8 +236,8 @@ function RiskMap() {
               {/* REGIONAL RISK MAP */}
               <div className="demo-map">
                 <MapContainer
-                  center={[22.5, 77.0]}
-                  zoom={4.5}
+                  center={[11.62, 76.11]}
+                  zoom={12}
                   scrollWheelZoom={true}
                   style={{ height: "100%", width: "100%" }}
                 >
@@ -486,7 +416,7 @@ function RiskMap() {
           {/* RISK SUMMARY */}
           <div className="risk-summary">
             <div>
-              <span className="summary-number">5</span>
+              <span className="summary-number">{riskZones.length}</span>
 
               <span>
                 {isHindi ? "निगरानी किए गए क्षेत्र" : "Monitored Areas"}
@@ -494,7 +424,9 @@ function RiskMap() {
             </div>
 
             <div>
-              <span className="summary-number">2</span>
+              <span className="summary-number">
+                {riskZones.filter((zone) => zone.risk === "High").length}
+              </span>
 
               <span>
                 {isHindi ? "उच्च जोखिम" : "High Risk"}
@@ -502,7 +434,9 @@ function RiskMap() {
             </div>
 
             <div>
-              <span className="summary-number">2</span>
+              <span className="summary-number">
+                {riskZones.filter((zone) => zone.risk === "Moderate").length}
+              </span>
 
               <span>
                 {isHindi ? "मध्यम जोखिम" : "Moderate Risk"}
@@ -510,7 +444,9 @@ function RiskMap() {
             </div>
 
             <div>
-              <span className="summary-number">1</span>
+              <span className="summary-number">
+                {riskZones.filter((zone) => zone.risk === "Advisory").length}
+              </span>
 
               <span>
                 {isHindi ? "सलाह" : "Advisory"}

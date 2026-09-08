@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -23,6 +23,9 @@ import {
 } from "lucide-react";
 
 import { useLanguage } from "../LanguageContext.jsx";
+import { useActiveLocation } from "../LocationContext.jsx";
+import LocationBadge from "../components/location/LocationBadge.jsx";
+import { useAlertsStore } from "../data/AlertsContext.jsx";
 
 /* =========================================================
    DEMO ALERT DATA
@@ -33,7 +36,7 @@ const initialAlerts = [
     id: 1,
     severity: "Critical",
     type: "Flash Flood Warning",
-    location: "Darjeeling Town, Darjeeling, West Bengal",
+    location: "Mundakkai, Wayanad, Kerala",
     time: "10 minutes ago",
     validUntil: "Valid until 6:00 PM",
 
@@ -58,7 +61,7 @@ const initialAlerts = [
     id: 2,
     severity: "High",
     type: "Landslide Alert",
-    location: "Kurseong, Darjeeling, West Bengal",
+    location: "Vythiri, Wayanad, Kerala",
     time: "25 minutes ago",
     validUntil: "Valid until 8:00 PM",
 
@@ -83,7 +86,7 @@ const initialAlerts = [
     id: 3,
     severity: "Moderate",
     type: "Heavy Rainfall Advisory",
-    location: "Kalimpong, West Bengal",
+    location: "Kalpetta, Wayanad, Kerala",
     time: "42 minutes ago",
     validUntil: "Valid until 10:00 PM",
 
@@ -108,7 +111,7 @@ const initialAlerts = [
     id: 4,
     severity: "Advisory",
     type: "Weather Advisory",
-    location: "Gangtok, Sikkim",
+    location: "Chooralmala, Wayanad, Kerala",
     time: "1 hour ago",
     validUntil: "Valid until tomorrow 8:00 AM",
 
@@ -155,6 +158,13 @@ const severityConfig = {
     className: "advisory",
     icon: Info,
   },
+
+  // "Low" is the severity vocabulary used by the Official Portal's
+  // Create Alert form — styled the same as Advisory here.
+  Low: {
+    className: "advisory",
+    icon: Info,
+  },
 };
 
 
@@ -168,11 +178,13 @@ const translations = {
     High: "उच्च",
     Moderate: "मध्यम",
     Advisory: "सलाह",
+    Low: "निम्न",
   },
 
   type: {
     "Flash Flood Warning": "अचानक बाढ़ चेतावनी",
     "Landslide Alert": "भूस्खलन चेतावनी",
+    "Landslide Warning": "भूस्खलन चेतावनी",
     "Heavy Rainfall Advisory": "भारी वर्षा सलाह",
     "Weather Advisory": "मौसम सलाह",
     "Flash Flood Watch": "अचानक बाढ़ निगरानी",
@@ -204,6 +216,25 @@ const translations = {
 function Alerts() {
 
   const { language } = useLanguage();
+
+  const { activeLocation } = useActiveLocation();
+
+  const { createdAlerts } = useAlertsStore();
+
+  // Alerts already carry a free-text "Village, District, State" string.
+  // Rather than inventing new location-tagged alert data, we flag the
+  // existing alerts whose text mentions the active district/state so
+  // relevant ones can surface first — using only real alert content.
+  const isNearActiveLocation = (alertLocationText) => {
+    if (!activeLocation) return false;
+
+    const { resolved } = activeLocation;
+
+    return (
+      alertLocationText.includes(resolved.district) ||
+      alertLocationText.includes(resolved.village)
+    );
+  };
 
   const [alerts, setAlerts] = useState(initialAlerts);
 
@@ -257,6 +288,68 @@ function Alerts() {
 
 
   /* =======================================================
+     OFFICIAL PORTAL ALERTS
+     Alerts created via Official → Create Alert are stored in
+     the shared AlertsContext. Map them into this page's card
+     shape and merge them into the alert list below so they
+     show up here automatically, without hardcoded edits.
+     ======================================================= */
+
+  const timeAgo = (timestamp) => {
+    const diffMin = Math.max(0, Math.floor((Date.now() - timestamp) / 60000));
+
+    if (diffMin < 1) return t("Just now", "अभी अभी");
+    if (diffMin === 1) return t("1 minute ago", "1 मिनट पहले");
+    if (diffMin < 60) return t(`${diffMin} minutes ago`, `${diffMin} मिनट पहले`);
+
+    const diffHr = Math.floor(diffMin / 60);
+    return t(`${diffHr} hour(s) ago`, `${diffHr} घंटे पहले`);
+  };
+
+  const officialAlertsForCitizen = useMemo(
+    () =>
+      createdAlerts.map((oa) => ({
+        id: oa.id,
+        severity: oa.severity,
+        type: oa.type,
+        location: `${oa.location}, ${oa.district}, ${oa.state}`,
+        time: timeAgo(oa.createdAt),
+        validUntil:
+          oa.status === "Resolved"
+            ? t("Resolved", "समाधान हो गया")
+            : t("Valid until further notice", "आगामी सूचना तक मान्य"),
+        message:
+          oa.message && oa.message.trim() !== ""
+            ? oa.message
+            : t(
+                "Official alert issued for this area. Follow local guidance.",
+                "इस क्षेत्र के लिए आधिकारिक चेतावनी जारी की गई है। स्थानीय दिशा-निर्देशों का पालन करें।"
+              ),
+        action: t(
+          "Follow official instructions and monitor for updates.",
+          "आधिकारिक निर्देशों का पालन करें और अपडेट के लिए निगरानी रखें।"
+        ),
+        rainfall: "—",
+        rainfallPeriod: "—",
+        soilMoisture: "—",
+        waterLevel: "—",
+        slopeStability: "—",
+        source: t("Official Portal Alert", "आधिकारिक पोर्टल चेतावनी"),
+        sensorStatus: "—",
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [createdAlerts, language]
+  );
+
+  // Combined list: alerts created by officials appear first,
+  // followed by this page's existing demo/live alert feed.
+  const combinedAlerts = useMemo(
+    () => [...officialAlertsForCitizen, ...alerts],
+    [officialAlertsForCitizen, alerts]
+  );
+
+
+  /* =======================================================
      SIMULATED LIVE ALERT
      ======================================================= */
 
@@ -289,7 +382,7 @@ function Alerts() {
       type: "Flash Flood Watch",
 
       location:
-        "Joshimath, Chamoli, Uttarakhand",
+        "Meppadi, Wayanad, Kerala",
 
       time: "Just now",
 
@@ -334,11 +427,21 @@ function Alerts() {
 
   const filteredAlerts =
     filter === "All"
-      ? alerts
-      : alerts.filter(
+      ? combinedAlerts
+      : combinedAlerts.filter(
           (alert) =>
             alert.severity === filter
         );
+
+  // Surface alerts relevant to the active location first, without
+  // hiding any others — the underlying alert data is unchanged.
+  const sortedFilteredAlerts = activeLocation
+    ? [...filteredAlerts].sort((a, b) => {
+        const aNear = isNearActiveLocation(a.location) ? 0 : 1;
+        const bNear = isNearActiveLocation(b.location) ? 0 : 1;
+        return aNear - bNear;
+      })
+    : filteredAlerts;
 
 
   /* =======================================================
@@ -346,14 +449,14 @@ function Alerts() {
      ======================================================= */
 
   const criticalCount =
-    alerts.filter(
+    combinedAlerts.filter(
       (alert) =>
         alert.severity === "Critical"
     ).length;
 
 
   const highCount =
-    alerts.filter(
+    combinedAlerts.filter(
       (alert) =>
         alert.severity === "High"
     ).length;
@@ -435,6 +538,7 @@ function Alerts() {
 
         <div className="page-container">
 
+          <LocationBadge className="page-location-badge" />
 
           {/* HEADER */}
 
@@ -606,7 +710,7 @@ function Alerts() {
             <div>
 
               <strong>
-                {filteredAlerts.length}
+                {sortedFilteredAlerts.length}
               </strong>
 
               <span>
@@ -701,7 +805,7 @@ function Alerts() {
 
           <div className="alerts-list">
 
-            {filteredAlerts.map((alert) => {
+            {sortedFilteredAlerts.map((alert) => {
 
               const config =
                 severityConfig[
@@ -811,6 +915,12 @@ function Alerts() {
                     <span>
                       {alert.location}
                     </span>
+
+                    {isNearActiveLocation(alert.location) && (
+                      <span className="alert-near-you-tag">
+                        {t("Near you", "आपके निकट")}
+                      </span>
+                    )}
 
                   </div>
 
@@ -1199,7 +1309,7 @@ function Alerts() {
               NO ALERTS
               ================================================= */}
 
-          {filteredAlerts.length === 0 && (
+          {sortedFilteredAlerts.length === 0 && (
 
             <div className="no-alerts">
 

@@ -10,7 +10,7 @@ export default function Footer() {
       {/* Main Footer */}
       <div className="container footer-content">
 
-        {/* Department */}
+        {/* About */}
         <div className="footer-section footer-about">
           <h3>
             {isHindi
@@ -19,17 +19,21 @@ export default function Footer() {
           </h3>
 
           <p>
-            {isHindi ? "गृह मंत्रालय" : "Ministry of Home Affairs"}
-          </p>
-
-          <p>
-            {isHindi ? "भारत सरकार" : "Government of India"}
+            {isHindi
+              ? "स्मार्ट आपदा प्रबंधन पहल"
+              : "Smart Disaster Management Initiative"}
           </p>
 
           <p>
             {isHindi
-              ? "आपदा प्रबंधन प्रभाग"
-              : "Disaster Management Division"}
+              ? "पूर्व चेतावनी एवं जोखिम निगरानी"
+              : "Early Warning & Risk Monitoring"}
+          </p>
+
+          <p>
+            {isHindi
+              ? "सुरक्षित समुदाय • स्मार्ट तकनीक • त्वरित प्रतिक्रिया"
+              : "Safer Communities • Smart Technology • Faster Response"}
           </p>
         </div>
 
@@ -81,45 +85,29 @@ export default function Footer() {
           </a>
         </div>
 
-        {/* Important Links */}
+        {/* About This Project */}
         <div className="footer-section">
           <h4>
-            {isHindi ? "महत्वपूर्ण लिंक" : "Important Links"}
+            {isHindi ? "इस परियोजना के बारे में" : "About This Project"}
           </h4>
 
-          <a
-            href="https://www.india.gov.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {isHindi ? "भारत सरकार" : "Government of India"}
+          <a href="/preparedness">
+            {isHindi ? "यह कैसे काम करता है" : "How It Works"}
           </a>
 
-          <a
-            href="https://www.mha.gov.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {isHindi ? "गृह मंत्रालय" : "Ministry of Home Affairs"}
+          <a href="/risk-map">
+            {isHindi ? "जोखिम निगरानी" : "Risk Monitoring"}
           </a>
 
-          <a
-            href="https://ndma.gov.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {isHindi ? "आपदा प्रबंधन" : "Disaster Management"}
+          <a href="/preparedness">
+            {isHindi ? "सुरक्षा दिशानिर्देश" : "Safety Guidelines"}
           </a>
 
-          <a
-            href="https://www.ndrf.gov.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <span className="footer-problem-statement">
             {isHindi
-              ? "राष्ट्रीय आपदा मोचन बल"
-              : "National Disaster Response Force"}
-          </a>
+              ? "स्मार्ट इंडिया हैकाथॉन 2026 | समस्या विवरण: SIH26192"
+              : "Smart India Hackathon 2026 | Problem Statement: SIH26192"}
+          </span>
         </div>
       </div>
 
@@ -128,7 +116,9 @@ export default function Footer() {
         <div className="container footer-bottom-content">
 
           <p>
-            {isHindi ? "© भारत सरकार" : "© Government of India"}
+            {isHindi
+              ? "© 2026 स्मार्ट आपदा प्रबंधन"
+              : "© 2026 Smart Disaster Management"}
           </p>
 
           <p>
@@ -145,12 +135,6 @@ export default function Footer() {
 
         </div>
       </div>
-      <div className="prototype-banner">
-  ⚠️{" "}
-  {isHindi
-    ? "प्रोटोटाइप — स्मार्ट इंडिया हैकाथॉन 2026 | समस्या विवरण: SIH26192"
-    : "Prototype — Smart India Hackathon 2026 | Problem Statement: SIH26192"}
-</div>
     </footer>
   );
 }
