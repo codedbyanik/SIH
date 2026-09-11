@@ -1,0 +1,3 @@
+event_id,event_type,start_time,end_time,location_id,location_name,source
+WAYANAD_2024_01,landslide,2024-07-30 01:15:00,2024-07-30 04:15:00,1,Mundakkai,KSDMA_Meppadi_Memorandum_2024
+WAYANAD_2024_01,landslide,2024-07-30 01:15:00,2024-07-30 04:15:00,2,Chooralmala,KSDMA_Meppadi_Memorandum_2024

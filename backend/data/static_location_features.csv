@@ -1,0 +1,6 @@
+location_id,location_name,latitude,longitude,elevation_m,slope_deg,distance_to_river_m
+1,Mundakkai,11.648,76.123,738.0,3.97,18.98
+2,Chooralmala,11.651,76.126,756.0,9.21,252.89
+3,Meppadi,11.656,76.137,757.0,14.07,168.95
+4,Vythiri,11.585,76.085,789.0,11.12,226.3
+5,Kalpetta,11.609,76.082,753.0,5.95,383.84

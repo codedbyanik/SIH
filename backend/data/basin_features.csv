@@ -1,0 +1,6 @@
+id,name,lat,lng,elevation_m,slope_deg,distance_to_river_m,peak_rainfall_mm,rainfall_3day_total_mm
+1,Mundakkai,11.648,76.123,738.0,3.7,19.1,5.7,39.6
+2,Chooralmala,11.651,76.126,756.0,8.23,254.6,8.6,48.4
+3,Meppadi,11.656,76.137,757.0,12.24,171.1,6.7,40.0
+4,Vythiri,11.585,76.085,789.0,16.6,228.3,8.6,48.4
+5,Kalpetta,11.609,76.082,753.0,5.84,387.7,8.6,48.4
