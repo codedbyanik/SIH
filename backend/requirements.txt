@@ -7,3 +7,5 @@ scikit-learn
 rasterio
 geopandas
 shapely
+gunicorn
+joblib

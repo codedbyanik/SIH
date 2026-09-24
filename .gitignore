@@ -1,6 +1,7 @@
 node_modules/
 dist/
 build/
+
 .env
 .env.*
 !.env.example
@@ -11,9 +12,7 @@ __pycache__/
 venv/
 
 *.log
-
 .vscode/
 .idea/
-
 .DS_Store
 Thumbs.db

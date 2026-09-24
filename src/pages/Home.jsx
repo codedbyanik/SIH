@@ -101,7 +101,6 @@ function Home() {
   const timeText = timestamp ? new Date(timestamp).toLocaleString(hi ? "hi-IN" : "en-IN", { dateStyle: "short", timeStyle: "short" }) : null;
 
   const t = {
-    gov: hi ? "भारत सरकार आपदा प्रबंधन पहल" : "Government of India Disaster Management Initiative",
     title: hi ? "अचानक बाढ़" : "Flash Flood", early: hi ? "पूर्व चेतावनी" : "Early Warning", system: hi ? "प्रणाली" : "System",
     desc: hi ? "पहाड़ी क्षेत्रों में सुरक्षित समुदायों के लिए स्थानीय बाढ़ जोखिम की जानकारी और समय पर चेतावनी।" : "Hyper-local flash-flood risk information and timely warnings for safer communities in hilly regions.",
     live: hi ? "वास्तविक समय निगरानी" : "Real-time monitoring", alerts: hi ? "स्थान-आधारित अलर्ट" : "Location-based alerts", prep: hi ? "आपातकालीन तैयारी" : "Emergency preparedness",
