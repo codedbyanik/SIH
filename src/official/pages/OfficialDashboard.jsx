@@ -17,7 +17,9 @@ import StatusBadge from "../../components/official/StatusBadge.jsx";
 import { useOfficialLanguage } from "../i18n/useOfficialLanguage.js";
 import { useOfficialAuth } from "../context/OfficialAuthContext.jsx";
 
-const API_BASE = "http://127.0.0.1:5000";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://127.0.0.1:5000";
 
 const STAT_ICONS = {
   activeAlerts: Bell,

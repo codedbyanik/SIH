@@ -12,7 +12,9 @@ import {
 import StatusBadge from "../../components/official/StatusBadge.jsx";
 import { useOfficialLanguage } from "../i18n/useOfficialLanguage.js";
 
-const API_BASE = "http://127.0.0.1:5000";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://127.0.0.1:5000";
 const INCIDENT_STORAGE_KEY = "sih_emergency_incidents";
 
 const EMPTY_FORM = {
