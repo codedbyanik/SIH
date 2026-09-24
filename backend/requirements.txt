@@ -3,9 +3,9 @@ flask-cors
 requests
 pandas
 numpy
-scikit-learn
+scikit-learn==1.7.2
 rasterio
 geopandas
 shapely
 gunicorn
-joblib
+joblib==1.5.3
