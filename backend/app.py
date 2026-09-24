@@ -602,7 +602,7 @@ CURRENT_WEATHER_CACHE = {
 }
 
 
-CURRENT_WEATHER_CACHE_SECONDS = 60
+CURRENT_WEATHER_CACHE_SECONDS = 600
 
 
 # ============================================================
