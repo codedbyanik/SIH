@@ -41,8 +41,10 @@ import pandas as pd
 # CONFIGURATION
 # ============================================================
 
-API_BASE = "http://127.0.0.1:5000"
-
+API_BASE = os.environ.get(
+    "REPLAY_API_BASE",
+    "http://127.0.0.1:5000"
+).rstrip("/")
 # 1800:
 # 3600 / 1800 = 2 seconds per historical hour.
 SPEED_FACTOR = 1800

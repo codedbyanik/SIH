@@ -603,6 +603,7 @@ CURRENT_WEATHER_CACHE = {
 
 
 CURRENT_WEATHER_CACHE_SECONDS = 600
+OPEN_METEO_RETRY_AFTER = 0
 
 
 # ============================================================
